@@ -1,4 +1,3 @@
-const { exception } = require("console");
 
 /**
  * @param {number[]} nums
@@ -6,35 +5,30 @@ const { exception } = require("console");
  * @return {number[]}
  */
 var medianSlidingWindow = function (nums, k) {
-    let len = nums.length;
-    if (nums.length == 0 || k > len) return [];
-    let left = 0, right = k;
-    let result = [];
-    let isOdd = k % 2 == 1
-    while (right <= len) {
-        // 暴力法 这里可以直接排序 nums.slice(left, right), 不推荐, 经测试内存吃不消
-        let windows = nums.slice(left, right);
-        if (isOdd) {
-            result.push(windows[Math.floor(k / 2)]);
-        } else {
-            let i = k / 2 - 1;
-            result.push((windows[i] + windows[i + 1]) / 2)
-        }
-        left += 1;
-        right += 1
+    let dh = new DualHeap(k);
+    for (let i = 0; i < k; i++) {
+        dh.insert(nums[i])
+    }
+    let result = [dh.getMedian()];
+    for (let i = k; i < nums.length; ++i) {
+        dh.insert(nums[i]);
+        dh.erase(nums[i - k]);
+        result[i - k + 1] = dh.getMedian();
     }
     return result;
 };
 
 class DualHeap {
 
-    constructor() {
+    constructor(k) {
         // 最小堆
         this.small = new PriorityQueue((a, b) => a > b);
         this.smallSize = 0;
         // 最大堆
-        this.larget = new PriorityQueue((a, b) => a <= b);
+        this.large = new PriorityQueue((a, b) => a <= b);
         this.largetSize = 0;
+        this.delayed = {};
+        this.k = k;
     }
 
     insert(num) {
@@ -42,7 +36,7 @@ class DualHeap {
             this.small.offer(num)
             this.smallSize++;
         } else {
-            this.larget.offer(num);
+            this.large.offer(num);
             this.largetSize++;
         }
         this.makeBalance()
@@ -50,19 +44,51 @@ class DualHeap {
 
     makeBalance() {
         if (this.smallSize - this.largetSize > 1) {
-            this.larget.offer(this.small.poll());
+            this.large.offer(this.small.poll());
             --this.smallSize;
             ++this.largetSize;
+            this.prune(this.small)
         } else if (this.smallSize < this.largetSize) {
-            this.small.offer(this.larget.poll());
+            this.small.offer(this.large.poll());
             --this.largetSize;
             ++this.smallSize;
+            this.prune(this.large)
         }
     }
 
-    print() {
-        console.info('small', this.small.queue)
-        console.info('larget', this.larget.queue)
+    erase(num) {
+        this.delayed[num] = this.delayed[num] || 0 + 1
+        if (num <= this.small.peek()) {
+            --this.smallSize;
+            if (num == this.small.peek()) {
+                this.prune(this.small);
+            };
+        } else {
+            --this.largetSize;
+            if (num == this.large.peek()) {
+                this.prune(this.large)
+            }
+        }
+        this.makeBalance()
+    }
+
+    prune(heap) {
+        while (!heap.isEmpty()) {
+            let num = heap.peek();
+            if (this.delayed[num]) {
+                this.delayed[num] = this.delayed[num] - 1;
+                if (this.delayed[num] == 0) {
+                    delete this.delayed[num];
+                }
+                heap.poll();
+            } else {
+                break;
+            }
+        }
+    }
+
+    getMedian() {
+        return (this.k & 1) == 1 ? this.small.peek() : (this.small.peek() + this.large.peek()) / 2;
     }
 }
 
@@ -78,7 +104,9 @@ class PriorityQueue {
     }
 
     offer(e) {
-        if (!e) throw new exception('元素不可以为null');
+        if (e == null) {
+            throw new Error('元素不可以为null')
+        };
         if (!this.size) {
             this.queue[0] = e;
         } else {
@@ -122,11 +150,11 @@ class PriorityQueue {
             let child = (k << 1) + 1;
             let c = this.queue[child];
             let right = child + 1;
-            if (right < this.size && c > this.queue[right]) {
+            if (right < this.size && this.comparator(this.queue[right], c)) {
                 c = this.queue[child = right]
             }
 
-            if (e < c) {
+            if (this.comparator(e, c)) {
                 break;
             }
             this.queue[k] = c;
@@ -145,11 +173,9 @@ class PriorityQueue {
     }
 }
 
-let data = [1, 3, -1, -3, 5, 3, 6, 7], k = 8;
+let data = [7, 0, 3, 9, 9, 9, 1, 7, 2, 3], k = 6;
 (async () => {
-    let dh = new DualHeap();
-    for (let i = 0; i < k; i++) {
-        dh.insert(data[i])
-    }
-    dh.print();
+    // 2, 3, 3, 3,2,3,2
+    const result = medianSlidingWindow(data, k);
+    console.info(result);
 })()
