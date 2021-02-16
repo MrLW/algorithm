@@ -25,13 +25,13 @@ var addTwoNumbers = function (l1, l2) {
     } else {
       isAddOne = 0;
     }
-    let currentNode = new ListNode(singleSum % 10, null);
+    r1.val = singleSum % 10;
     if (lastNode) {
-      lastNode.next = currentNode;
+      lastNode.next = r1;
     } else {
-      result.next = currentNode;
+      result.next = r1;
     }
-    lastNode = currentNode;
+    lastNode = r1;
     r1 = r1.next;
     r2 = r2.next;
   }
@@ -43,13 +43,13 @@ var addTwoNumbers = function (l1, l2) {
     } else {
       isAddOne = 0;
     }
-    let currentNode = new ListNode(singleSum % 10, null);
+    r1.val = singleSum % 10;
     if (lastNode) {
-      lastNode.next = currentNode;
+      lastNode.next = r1;
     } else {
-      result.next = currentNode;
+      result.next = r1;
     }
-    lastNode = currentNode;
+    lastNode = r1;
     r1 = r1.next;
   }
   while (r2) {
@@ -60,13 +60,13 @@ var addTwoNumbers = function (l1, l2) {
     } else {
       isAddOne = 0;
     }
-    let currentNode = new ListNode(singleSum % 10, null);
+    r2.val = singleSum % 10;
     if (lastNode) {
-      lastNode.next = currentNode;
+      lastNode.next = r2;
     } else {
-      result.next = currentNode;
+      result.next = r2;
     }
-    lastNode = currentNode;
+    lastNode = r2;
     r2 = r2.next;
   }
   if(isAddOne){
