@@ -12,20 +12,10 @@ var matrixReshape = function (nums, r, c) {
   if (total != sr * sc) {
     return nums;
   }
-  let result = [],
-    temp = [],
-    x = 0;
-  for (let i = 0; i < sr; i++) {
-    for (let j = 0; j < sc; j++) {
-      temp[x++] = nums[i][j];
-    }
-  }
-  for (let i = 0; i < r; i++) {
-    let item = [];
-    for (let j = 0; j < c; j++) {
-      item[j] = temp[i * c+ j];
-    }
-    result.push(item);
+  let result = new Array(r).fill(0).map((item) => new Array(c).fill(0));
+  for (let i = 0; i < r * c; i++) {
+    result[Math.floor(i / c)][Math.floor(i % c)] =
+      nums[Math.floor(i / sc)][Math.floor(i % sc)];
   }
   return result;
 };
