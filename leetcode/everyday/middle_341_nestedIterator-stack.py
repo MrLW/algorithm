@@ -26,26 +26,24 @@ class NestedInteger:
 
 class NestedIterator:
     def __init__(self, nestedList: [NestedInteger]):
-        self.flattenList = [];
-        self.__flatten(nestedList)
-        self.cur = 0
-    
-    def __flatten(self, nestedList: [NestedInteger]):
-        for l in nestedList:
-            if l.isInteger():
-                self.flattenList.append(l.getInteger())
-            else :
-                self.__flatten(l.getList())
-        
-    
+        self.stack = nestedList
+
     def next(self) -> int:
-        r = self.flattenList[self.cur]
-        self.cur += 1
-        return r
-        
-    
+        ret = self.stack[0]
+        del self.stack[0]
+        return ret
+
     def hasNext(self) -> bool:
-        return self.cur < len(self.flattenList)
+        while len(self.stack):
+            if self.stack[0].isInteger():
+                return
+            else:
+                cur = self.stack[0].getList()
+
+                del self.stack[0]
+
+                self.stack = cur + self.stack
+                
 
 s = NestedIterator([1, [[2, 3], [4, [5, 6]]]])
 
