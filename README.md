@@ -1,6 +1,6 @@
 # 七. 二叉树
 
-
+## 二叉搜索树
 
 ##### 前言: 二叉搜索树的特性:
 
@@ -63,6 +63,73 @@ def isValidBST(self, root: TreeNode) -> bool:
             return True
         return isValidBST(root)
 ```
+
+
+
+### 7.5 恢复二叉树
+
+##### 1. 中序遍历+栈
+
+```python
+class Solution:
+    def recoverTree(self, root: Optional[TreeNode]) -> None:
+        """
+        Do not return anything, modify root in-place instead.
+        """
+        stack, pre = [], TreeNode(float("-inf"))
+        a, b = None, None
+        cur = root
+        while cur or stack:
+            while cur:
+                stack.append(cur)
+                cur = cur.left
+            cur = stack.pop()
+            if cur.val < pre.val:
+                if not a:
+                    a = pre
+                b = cur
+            pre = cur
+            cur = cur.right
+        a.val, b.val = b.val, a.val
+```
+
+##### 2. Minor 中序遍历实现(TODO)
+
+
+
+### 7.6 相同的二叉树
+
+##### 1. 递归
+
+```python
+class Solution:
+    def isSameTree(self, p: TreeNode, q: TreeNode) -> bool:
+        if not p and not q:
+            return True
+        if not p or not q:
+            return False
+        if p.val != q.val:
+            return False
+        return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+```
+
+##### 2. 广度优先搜索(TODO)
+
+```python
+
+```
+
+
+
+
+
+
+
+## 深度/广度优先搜索(TODO)
+
+
+
+
 
 
 
