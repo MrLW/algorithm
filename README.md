@@ -1,18 +1,87 @@
 # 七. 二叉树
 
+## ① 二叉树
 
+### 7.1.1 相同的二叉树
+
+##### 1. 递归
+
+```python
+class Solution:
+    def isSameTree(self, p: TreeNode, q: TreeNode) -> bool:
+        if not p and not q:
+            return True
+        if not p or not q:
+            return False
+        if p.val != q.val:
+            return False
+        return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+```
+
+##### 2. 广度优先搜索(TODO)
+
+```python
+
+```
+
+
+
+### 7.1.2 对称二叉树
+
+##### 1. 递归实现
+
+```python
+class Solution:
+    def isSymmetric(self, root: TreeNode) -> bool:
+        def isSymmetric(left: TreeNode, right: TreeNode) -> bool:
+            if not left and not right:
+                return True
+            if(not left) ^ (not right):
+                return False
+            if left.val != right.val:
+                return False
+            return isSymmetric(left.left, right.right) and isSymmetric(left.right, right.left)
+        return isSymmetric(root, root) if root else True
+```
+
+##### 2. 迭代实现
+
+```python
+class Solution:
+    def isSymmetric(self, root: TreeNode) -> bool:
+        def check(u, v) -> bool:
+            queue = [u, v]
+            while queue:
+                u, v = queue.pop(), queue.pop()
+                if not u and not v:
+                    continue
+                if (not u or not v) or u.val != v.val:
+                    return False
+                queue.append(u.left)
+                queue.append(v.right)
+                queue.append(u.right)
+                queue.append(v.left)
+            return True
+        return check(root, root) if root else True
+```
+
+
+
+
+
+## ②、叉搜索树
 
 ##### 前言: 二叉搜索树的特性:
 
 - 中序遍历时序列一定是升序的, 有些题目可以利用这个性质
 
-### 7.1 二叉树的前中后序遍历
+### 7.2.1 二叉树的前中后序遍历
 
-### 7.2 二叉搜索树的个数(动态规划)
+### 7.2.2 二叉搜索树的个数(动态规划)
 
-### 7.3 二叉搜索树的数组(回溯法)
+### 7.2.3 二叉搜索树的数组(回溯法)
 
-### 7.4 验证二叉搜索树(中序遍历)
+### 7.2.4 验证二叉搜索树(中序遍历)
 
 #####    1. 中序遍历 + 栈
 
@@ -63,6 +132,47 @@ def isValidBST(self, root: TreeNode) -> bool:
             return True
         return isValidBST(root)
 ```
+
+
+
+### 7.2.5 恢复二叉树
+
+##### 1. 中序遍历+栈
+
+```python
+class Solution:
+    def recoverTree(self, root: Optional[TreeNode]) -> None:
+        """
+        Do not return anything, modify root in-place instead.
+        """
+        stack, pre = [], TreeNode(float("-inf"))
+        a, b = None, None
+        cur = root
+        while cur or stack:
+            while cur:
+                stack.append(cur)
+                cur = cur.left
+            cur = stack.pop()
+            if cur.val < pre.val:
+                if not a:
+                    a = pre
+                b = cur
+            pre = cur
+            cur = cur.right
+        a.val, b.val = b.val, a.val
+```
+
+##### 2. Minor 中序遍历实现(TODO)
+
+
+
+
+
+## 深度/广度优先搜索(TODO)
+
+
+
+
 
 
 
